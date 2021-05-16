@@ -8,26 +8,22 @@ from pandasql import sqldf
 import numpy as np
 import shutil
 from multiprocessing import Pool
+from utils import var2int
 
-INPUT_FOLDER = "/srv/dropbox/Dropbox/Espacio familiar/Fotos/jpeg"
-OUTPUT_FOLDER = "/srv/dropbox/Dropbox/Espacio familiar/Fotos/colecciones"
-
-
-def var2int(x):
-    try:
-        return int(x)
-    except:
-        return np.nan
+_this_path = os.path.realpath(__file__)
+INPUT_FOLDER = _this_path + "../jpeg"
+OUTPUT_FOLDER = _this_path + "../colecciones"
+#OUTPUT_FOLDER = "/srv/dropbox/Dropbox/Espacio familiar/Fotos/colecciones"
 
 
 def create_symlink(row, folder):
     """Creates the symlink
-    
+
     This is actually tricky because I want the symlinks to be understood by dropbox, meaning they can't not point to absolute folders but rather to relative folders
     """
     print(os.getcwd())
     depth = len(folder.split('/'))
-    
+
     input = os.path.realpath(
         "%s/%s" % (row['directory'], row['filename'])
     )
@@ -40,8 +36,10 @@ def create_symlink(row, folder):
 
 def generate_collection(spec):
     """Generates a single collection"""
+
+    name = spec['name'] if 'name' in spec else spec['folder']
     print("Generating {name} in folder {folder}".format(
-        name=spec['name'], folder=spec['folder']))
+        name=name, folder=spec['folder']))
 
     query = "select directory, file from jpeg where {condition}".format(
         condition=spec['rule'])
@@ -58,16 +56,6 @@ def generate_collection(spec):
 
     selected.apply(lambda r: create_symlink(r, spec['folder']), axis=1)
 
-    """
-    for _file in stream.readlines():
-        file = _file[:-1]
-        file_path = "%s/%s" % (INPUT_FOLDER, file)
-        file_name = file.split("/")[-1]
-        destination = "%s/%s/%s" % (OUTPUT_FOLDER, file_name, spec['folder'])
-        print("%s -> %s" % (destination, file_path))
-        os.symlink(file_path, destination)
-    """
-
 
 def generate_collections(spec):
     """Generates collections out of a yaml specification"""
@@ -79,7 +67,7 @@ def generate_collections(spec):
 
 if __name__ == '__main__':
     print("Generating collections from scratch.")
-    columns = "-Rating -GPSlatitude -GPSlongitude -datetimeoriginal -directory -filename -title -description -derivedfrom -filemodifydate -subject -hierarchicalsubject -Make -Model -ImageWidth -ImageHeight -Aperture -ExposureTime -ISO".lower().split()
+    columns = "-Rating -GPSlatitude -GPSlongitude -datetimeoriginal -directory -filename -title -description -derivedfrom -filemodifydate -subject -hierarchicalsubject -Make -Model -Lens -LensID -ImageWidth -ImageHeight -Aperture -ExposureTime -ISO".lower().split()
     columns = [c[1:] for c in columns]
     jpeg = pd.read_csv(
         '/srv/dropbox/Dropbox/Espacio familiar/Fotos/scripts/data/jpeg_exif.tsv', sep='\t', names=columns)

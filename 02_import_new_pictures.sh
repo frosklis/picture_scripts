@@ -6,8 +6,8 @@ set -e
 dest="/srv/dropbox/Dropbox/Espacio\ familiar/Fotos/en_proceso/"
 dest_space="/srv/dropbox/Dropbox/Espacio familiar/Fotos/en_proceso/"
 grp="fotos"
-command="exiftool '$1' '-filename<CreateDate' -d ${dest}%Y%m%d_%H%M%S%%-c.%%le -r"
-umask 002
+command="/usr/bin/vendor_perl/exiftool '$1' '-filename<CreateDate' -d ${dest}%Y%m%d_%H%M%S%%-c.%%le -r"
+
 echo $command
 
 eval $command

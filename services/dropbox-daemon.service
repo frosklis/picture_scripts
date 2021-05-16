@@ -1,0 +1,8 @@
+[Unit]
+Description=headless Dropbox
+RefuseManualStart=no
+
+[Service]
+Type=oneshot
+ExecStart=/srv/dropbox/daemon.sh
+

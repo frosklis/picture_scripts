@@ -15,8 +15,7 @@ done
 for user in "${sync_users[@]}"
 do
         echo "watching camera uploads for ${user}"
-        sudo -u ${user} /srv/dropbox/Dropbox/Espacio\ familiar/Fotos/scripts/sync.sh &
+        /srv/dropbox/Dropbox/Espacio\ familiar/Fotos/scripts/01_sync_camera_uploads.sh ${user} &
 done
 
 wait
-
